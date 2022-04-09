@@ -1,0 +1,2 @@
+# tp2-ift1015
+JEU DE POKER SHUFFLE
