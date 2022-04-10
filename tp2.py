@@ -110,12 +110,20 @@ def getCase(id):
 def randomCard():
     return math.floor(random() * 52)
 
-
 def clic(id):
-    case = getCase(id)
+    #je dois mettre une condition pour que juste les carte dans le tableau
+    #et le paquet s'allume.
+    #voir comment je pourrais juste enlever la couleur precedante sans iterer
     
-    case.setAttribute('style', 'background-color: lime')
-    
+    for i in range(26):        
+        case = getCase(i)       
+        if i == id:           
+            case.setAttribute('style', 'background-color: lime')
+            
+        else:
+            case.setAttribute('style', 'background-color: white')
+        
+
     if id == 25:
         case.innerHTML = img(randomCard())
 
