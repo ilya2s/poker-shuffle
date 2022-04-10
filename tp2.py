@@ -1,72 +1,5 @@
-cartes = [
-    "AC", "AD", "AH", "AS",
-    "2C", "2D", "2H", "2S",
-    "3C", "3D", "3H", "3S",
-    "4C", "4D", "4H", "4S",
-    "5C", "5D", "5H", "5S",
-    "6C", "6D", "6H", "6S",
-    "7C", "7D", "7H", "7S",
-    "8C", "8D", "8H", "8S",
-    "9C", "9D", "9H", "9S",
-    "10C", "10D", "10H", "10S",
-    "JC", "JD", "JH", "JS",
-    "QC", "QD", "QH", "QS",
-    "KC", "KD", "KH", "KS", "empty", "back"]
-
-
-def tableauPoints(dimension):
-    html = '<tr>'
-    for i in range(dimension):
-        html += '<td id="C' + str(i) + '">20</td>'
-        
-    html += '<td id="T">999</td>'
-    html += '</tr>'
-    
-    return html
-
-
-def tableauCartes(dimension):
-    html = ''
-    c = 0
-    for i in range(dimension):
-        html += '<tr>'
-        for j in range(dimension):
-            html += '<td id="case' + str(c) + '" onclick="clic(' + str(c) + ')"><img src="http://codeboot.org/cards/' + cartes[52] + '.svg"></td>'
-            c += 1
-        html += '<td id="R' + str(i) + '">20</td>'
-        html += '</tr>'
-    
-    html += tableauPoints(dimension)
-        
-    return html
-
-
-def creerTable(dimension):
-    html = '<table>'
-    html += tableauCartes(dimension)
-    html+= '</table>'
-    
-    return html
-
-
-def randomCard():
-    return math.floor(random() * 52)
-
-
-def clic(id):
-    case = document.querySelector('#case' + str(id))
-    case.setAttribute('style', 'background-color: lime')
-    
-    if id == 25:
-        case.innerHTML = '<img src="http://codeboot.org/cards/' + cartes[randomCard()] + '.svg">'
-
-
-def init():
-    
-    main = document.querySelector('#main')
-    
-    main.innerHTML = """
-    <style>
+html = """
+<style>
         #main {
             padding: 1%;
         }
@@ -90,8 +23,6 @@ def init():
             padding: 8%;
         }
     </style>
-    """
-    main.innerHTML += """
     <table>
         <tr>
             <td><button onclick="init();">Nouvelle partie</button></td>
@@ -100,9 +31,100 @@ def init():
             <td></td>
         </tr>
     </table>
-    """
+"""
+
+cartes = [
+    "AC", "AD", "AH", "AS",
+    "2C", "2D", "2H", "2S",
+    "3C", "3D", "3H", "3S",
+    "4C", "4D", "4H", "4S",
+    "5C", "5D", "5H", "5S",
+    "6C", "6D", "6H", "6S",
+    "7C", "7D", "7H", "7S",
+    "8C", "8D", "8H", "8S",
+    "9C", "9D", "9H", "9S",
+    "10C", "10D", "10H", "10S",
+    "JC", "JD", "JH", "JS",
+    "QC", "QD", "QH", "QS",
+    "KC", "KD", "KH", "KS", "empty", "back"]
+
+
+def img(num):
+    return '<img src="http://codeboot.org/cards/' + cartes[num] + '.svg">'
+
+
+def emptyCase(num):
+    case = '<td id="case' + str(num) + '" onclick="clic('
+    case += str(num) + ')">' + img(52) + '</td>'
     
-    main.innerHTML += creerTable(5)
+    return case
+
+
+def pointsCol(dimension):
+    balise = ''
+    for i in range(dimension):
+        balise += '<td id="C' + str(i) + '">20</td>'
+    
+    return balise
+
+
+def pointsRang(index):
+    return '<td id="R' + str(index) + '">20</td></tr>'
+
+
+def pointsTot():
+    return '<td id="T">999</td>'
+
+
+def tableauPoints(dimension):
+    return '<tr>' + pointsCol(dimension) + pointsTot() + '</tr>'
+
+
+def rangees(dimension):
+    balise = ''
+    c = 0
+    for i in range(dimension):
+        balise += '<tr>'
+        for j in range(dimension):
+            balise += emptyCase(c)
+            c += 1
+        balise += pointsRang(i)
+    
+    return balise
+
+
+def tableauCartes(dimesion):
+    balise = rangees(dimesion) + tableauPoints(dimesion)
+    
+    return balise
+
+
+def creerTable(dimension):
+    return '<table>' + tableauCartes(dimension) + '</table>'
+
+
+def getCase(id):
+    return document.querySelector('#case' + str(id))
+
+
+def randomCard():
+    return math.floor(random() * 52)
+
+
+def clic(id):
+    case = getCase(id)
+    
+    case.setAttribute('style', 'background-color: lime')
+    
+    if id == 25:
+        case.innerHTML = img(randomCard())
+
+
+def init():
+    
+    main = document.querySelector('#main')
+    
+    main.innerHTML = html + creerTable(5)
 
 
 init()
