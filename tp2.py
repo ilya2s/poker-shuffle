@@ -49,6 +49,14 @@ cartes = [
     "KC", "KD", "KH", "KS", "empty", "back"]
 
 
+def makeGame():
+    game = []
+    for i in range(26):
+        game.append(struct(id=i, selected=False, card=52))
+    game[-1].card=53
+    return game
+
+
 def img(num):
     return '<img src="http://codeboot.org/cards/' + cartes[num] + '.svg">'
 
@@ -111,20 +119,90 @@ def randomCard():
     return math.floor(random() * 52)
 
 
-def clic(id):
-    case = getCase(id)
-    
+def drawCard(clic, case):
+    if clic.id == 25 and clic.card == 53:
+        card = randomCard()
+        for element in game:
+            if card == element.card:
+                card = randomCard()
+                
+        clic.card = card
+        case.innerHTML = img(card)
+
+
+def selection(clic):
+    if clic.card != 52:
+        clic.selected = False if clic.selected else True
+
+
+def bgLime(case):
     case.setAttribute('style', 'background-color: lime')
     
-    if id == 25:
-        case.innerHTML = img(randomCard())
 
+def bgTransparent(case):
+    case.setAttribute('style', 'background-color: none')
+    
+
+def highlight(clic, case):
+    if clic.selected and clic.card != 52:
+        for element in game:
+            if element.selected and element != clic:
+                selection(element)
+                bgTransparent(getCase(element.id))
+        bgLime(case)
+    else:
+        bgTransparent(case)
+
+
+def placeCard(clic, case):
+    deck = game[25]
+    deckCase = getCase(deck.id)
+    
+    if deck.selected and clic.card == 52:        
+        selection(deck)
+        highlight(deck, deckCase)
+        
+        clic.card = deck.card
+        deck.card = 53
+        
+        case.innerHTML = deckCase.innerHTML
+        deckCase.innerHTML = img(53)
+    
+    elif not deck.selected and clic.card == 52:
+        for element in game:
+            if element.selected:
+                elemCase = getCase(element.id)
+                
+                selection(element)
+                highlight(element, elemCase)
+                
+                clic.card = element.card
+                element.card = 52
+                
+                case.innerHTML = elemCase.innerHTML
+                elemCase.innerHTML = img(52)
+
+ 
+def clic(id):
+    
+    clic = game[id]
+    case = getCase(clic.id)
+    
+    selection(clic)
+    
+    drawCard(clic, case)
+    
+    placeCard(clic, case)
+        
+    highlight(clic, case)
+    
 
 def init():
+    
+    global game
     
     main = document.querySelector('#main')
     
     main.innerHTML = html + creerTable(5)
-
-
-init()
+    
+    game = makeGame()
