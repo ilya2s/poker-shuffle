@@ -122,9 +122,14 @@ def randomCard():
 def drawCard(clic, case):
     if clic.id == 25 and clic.card == 53:
         card = randomCard()
-        for element in game:
-            if card == element.card:
+        c = 0
+        
+        while c < 25:
+            if card == game[c].card:
                 card = randomCard()
+                c = 0
+            else:
+                c +=1
                 
         clic.card = card
         case.innerHTML = img(card)
@@ -144,7 +149,7 @@ def bgTransparent(case):
     
 
 def highlight(clic, case):
-    if clic.selected and clic.card != 52:
+    if clic.selected:
         for element in game:
             if element.selected and element != clic:
                 selection(element)
@@ -181,7 +186,28 @@ def placeCard(clic, case):
                 
                 case.innerHTML = elemCase.innerHTML
                 elemCase.innerHTML = img(52)
-
+       
+      
+      
+    elif not deck.selected and clic.card != 52:
+        for element in game:
+            if element.selected and element.id != clic.id:
+                elemCase = getCase(element.id)
+                
+                selection(element)
+                highlight(element, elemCase)
+                
+                tempCard = clic.card
+                tempHTML = case.innerHTML
+                
+                clic.card = element.card
+                case.innerHTML = elemCase.innerHTML
+                
+                element.card = tempCard
+                elemCase.innerHTML = tempHTML
+                
+                selection(clic)
+                highlight(clic, case)
  
 def clic(id):
     
