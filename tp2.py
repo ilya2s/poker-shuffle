@@ -46,7 +46,8 @@ cartes = [
     "10C", "10D", "10H", "10S",
     "JC", "JD", "JH", "JS",
     "QC", "QD", "QH", "QS",
-    "KC", "KD", "KH", "KS", "empty", "back"]
+    "KC", "KD", "KH", "KS",
+    "empty", "back"]                
 
 
 def makeGame():
@@ -150,6 +151,7 @@ def bgTransparent(case):
 
 def highlight(clic, case):
     if clic.selected:
+        # if there is a selected card that is not the clicked card : deselect
         for element in game:
             if element.selected and element != clic:
                 selection(element)
@@ -189,7 +191,7 @@ def placeCard(clic, case):
        
       
       
-    elif not deck.selected and clic.card != 52:
+    if not deck.selected and clic.card != 52:
         for element in game:
             if element.selected and element.id != clic.id:
                 elemCase = getCase(element.id)
@@ -201,14 +203,81 @@ def placeCard(clic, case):
                 tempHTML = case.innerHTML
                 
                 clic.card = element.card
-                case.innerHTML = elemCase.innerHTML
-                
                 element.card = tempCard
+                
+                case.innerHTML = elemCase.innerHTML
                 elemCase.innerHTML = tempHTML
                 
                 selection(clic)
                 highlight(clic, case)
- 
+
+
+def steps(i, direction):
+    # 0 -> horizontal
+    # else -> vertical
+    if direction == 0:
+        start= i * 5
+        end= start + 4
+        step= 1
+    else:
+        start= i
+        end= start + 21
+        step= 5
+    
+    return (start, end, step)
+
+                
+def trier(jeu, direction):
+    jeu = jeu.copy()
+    
+    # soit 5 lignes ou 5 colonnes
+    for i in range(5):
+        s = steps(i, direction)
+        
+        echange = True
+        while echange:
+            echange = False
+            for j in range(s[0], s[1], s[2]):
+                if j+s[2] < len(jeu) and jeu[j].card > jeu[j+s[2]].card:
+                    temp = jeu[j]
+                    jeu[j] = jeu[j+s[2]]
+                    jeu[j+s[2]] = temp
+                    echange = True
+    return jeu 
+
+
+def memeValeurs(jeu, direction):
+    jeu = trier(jeu, direction)
+    
+    for i in range(5):
+        s = steps(i, direction)
+        
+        c= 0 
+        for j in range(s[0], s[1], s[2]):
+            empty = jeu[j].card == 52
+            
+            if j + 2 * s[2] < len(jeu):
+                same3= jeu[j+s[2]].card // 4 == jeu[j + 2 * s[2]].card // 4
+            else:
+                same3 = False
+            if j + s[2] < len(jeu):
+                same2= same2= jeu[j].card // 4 == jeu[j+s[2]].card // 4
+            else:
+                same2= False
+                
+            if not empty and same2:
+                c+= 1 if same3 else 2
+        
+        
+        if direction == 0:    
+            print('ligne ' + str(i+1) + ' ' + str(c))
+        else:
+            print('colonne ' + str(i+1) + ' ' + str(c))
+    print('\n=======================')
+    
+    
+
+                
 def clic(id):
     
     clic = game[id]
@@ -222,7 +291,10 @@ def clic(id):
         
     highlight(clic, case)
     
+    memeValeurs(game, 0)
+    memeValeurs(game, 1)
 
+    
 def init():
     
     global game
@@ -232,3 +304,6 @@ def init():
     main.innerHTML = html + creerTable(5)
     
     game = makeGame()
+
+
+init()
