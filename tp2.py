@@ -280,6 +280,16 @@ def points(game):
         
         print(horizontal, vertical)
 
+
+def mettrejeuAJour(game):
+    jeu = game.copy()
+    c=0
+    for i in range(25):
+        if jeu[i].card != 52:
+            c+=1
+    if c == 25:
+        alert( " vous avez fini ")
+        init()
                 
 def clic(id):
     
@@ -295,6 +305,8 @@ def clic(id):
     highlight(clic, case)
     
     points(game)
+    
+    mettrejeuAJour(game)
     
     print('\n=======================')
     
