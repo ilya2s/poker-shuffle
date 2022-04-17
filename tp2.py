@@ -72,13 +72,13 @@ def emptyCase(num):
 def pointsCol(dimension):
     balise = ''
     for i in range(dimension):
-        balise += '<td id="C' + str(i) + '">20</td>'
+        balise += '<td id="C' + str(i) + '">00 </td>'
     
     return balise
 
 
 def pointsRang(index):
-    return '<td id="R' + str(index) + '">20</td></tr>'
+    return '<td id="R' + str(index) + '">00</td></tr>'
 
 
 def pointsTot():
@@ -212,57 +212,85 @@ def placeCard(clic, case):
                 highlight(clic, case)
 
 
-def steps(direction):
+def steps(i, direction):
+    # 0 -> horizontal
+    # else -> vertical
     if direction == 0:
-            start = i * 5
-            end = start + 4
-            steps = 1
-        else:
-            start = i
-            end = start + 21
-            steps = 5
-            
-    return start, end, steps
+        start= i * 5
+        end= start + 4
+        step= 1
+    else:
+        start= i
+        end= start + 21
+        step= 5
+    
+    return (start, end, step)
 
-
-def trier(game, direction): # tri bulle
-    game = game.copy() 
+                
+def trier(jeu, direction):
+    jeu = jeu.copy()
+    
+    # soit 5 lignes ou 5 colonnes
     for i in range(5):
+        s = steps(i, direction)
+        
         echange = True
-        
-        start = direction(direction)[0]
-        end = direction(direction)[1]
-        steps = direction(direction)[2]
-        
         while echange:
             echange = False
-            for j in range(start, end):
-                if game[j].card > game[j+1].card:
-                    temp = game[j]
-                    game[j] = game[j+1]
-                    game[j+1] = temp
+            for j in range(s[0], s[1], s[2]):
+                if j+s[2] < len(jeu) and jeu[j].card > jeu[j+s[2]].card:
+                    temp = jeu[j]
+                    jeu[j] = jeu[j+s[2]]
+                    jeu[j+s[2]] = temp
                     echange = True
-    return game
+    return jeu 
 
 
-def nbMemeValeur(game, direction):
-    for i in range(5):        
-        start = direction(direction)[0]
-        end = direction(direction)[1]
-        steps = direction(direction)[2]
+def memeValeurs(jeu, direction):
+    global c
+    jeu = trier(jeu, direction)
+    
+    for i in range(5):
+        s = steps(i, direction)
         
-        c = 0
-        for j in range(start, end, steps):
-            if game[j].card != 52 and game[j].card // 4 == game[j+steps].card // 4:
-                if game[j+steps].card // 4 == game[j + 2 * steps].card // 4:
-                    c+=1
-                else:
-                    c+=2
+        c= 0 
+        for j in range(s[0], s[1], s[2]):
+            empty = jeu[j].card == 52
+            
+            if j + 2 * s[2] < len(jeu):
+                same3= jeu[j+s[2]].card // 4 == jeu[j + 2 * s[2]].card // 4
+            else:
+                same3 = False
+            if j + s[2] < len(jeu):
+                same2= same2= jeu[j].card // 4 == jeu[j+s[2]].card // 4
+            else:
+                same2= False
+                
+            if not empty and same2:
+                c+= 1 if same3 else 2
+                
+    
+                
+        
+        
 
-        print('ligne ' + str(i+1) + ' ' + str(c))
-    print('\n=======================')
+def mettrejeuAJour(game):
+    jeu = game.copy()
+    c=0
+    for i in range(25):
+        if jeu[i].card != 52:
+            c+=1
+    print(c)
+    if c == 25:
+        alert( " vous avez fini ")
+        init()
+    
+            
+    
+        
+   
 
-
+                
 def clic(id):
     
     clic = game[id]
@@ -276,12 +304,11 @@ def clic(id):
         
     highlight(clic, case)
     
-    sortedGame = trier(game)
+    memeValeurs(game, 0)
+    memeValeurs(game, 1)
     
-    nbMemeValeur(sortedGame, 0)
-    
-    
-    
+    mettrejeuAJour(game)
+
     
 def init():
     
@@ -292,6 +319,5 @@ def init():
     main.innerHTML = html + creerTable(5)
     
     game = makeGame()
-
 
 init()
