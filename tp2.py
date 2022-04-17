@@ -246,51 +246,52 @@ def trier(jeu, direction):
     return jeu 
 
 
-def memeValeurs(jeu, direction):
-    global c
+def memeValeurs(jeu, n, direction):
     jeu = trier(jeu, direction)
     
-    for i in range(5):
-        s = steps(i, direction)
-        
-        c= 0 
-        for j in range(s[0], s[1], s[2]):
-            empty = jeu[j].card == 52
-            
-            if j + 2 * s[2] < len(jeu):
-                same3= jeu[j+s[2]].card // 4 == jeu[j + 2 * s[2]].card // 4
-            else:
-                same3 = False
-            if j + s[2] < len(jeu):
-                same2= same2= jeu[j].card // 4 == jeu[j+s[2]].card // 4
-            else:
-                same2= False
-                
-            if not empty and same2:
-                c+= 1 if same3 else 2
-                
+    s = steps(n, direction)
     
-                
+    c= 0 
+    for i in range(s[0], s[1], s[2]):
+        empty = jeu[i].card == 52
         
-        
+        if i + 2 * s[2] < len(jeu):
+            same3= jeu[i+s[2]].card // 4 == jeu[i + 2 * s[2]].card // 4
+        else:
+            same3 = False
+        if i + s[2] < len(jeu):
+            same2= same2= jeu[i].card // 4 == jeu[i+s[2]].card // 4
+        else:
+            same2= False
+            
+        if not empty and same2:
+            c+= 1 if same3 else 2
+            
+    return c
 
+
+def points(game):
+    jeu = game.copy()
+    
+    for i in range(5):
+        # nb cartes meme valeurs
+        horizontal = memeValeurs(jeu, i, 0)
+        vertical = memeValeurs(jeu, i, 1)
+        
+        print(horizontal, vertical)
+
+                
 def mettrejeuAJour(game):
     jeu = game.copy()
     c=0
     for i in range(25):
         if jeu[i].card != 52:
             c+=1
-    print(c)
     if c == 25:
         alert( " vous avez fini ")
+    print(c)
         init()
     
-            
-    
-        
-   
-
-                
 def clic(id):
     
     clic = game[id]
@@ -303,6 +304,10 @@ def clic(id):
     placeCard(clic, case)
         
     highlight(clic, case)
+    
+    points(game)
+    
+    print('\n=======================')
     
     memeValeurs(game, 0)
     memeValeurs(game, 1)
@@ -319,5 +324,6 @@ def init():
     main.innerHTML = html + creerTable(5)
     
     game = makeGame()
+
 
 init()
