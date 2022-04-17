@@ -1,7 +1,7 @@
 html = """
 <style>
         #main {
-            padding: 1%;
+            padding: 0,2%;
         }
         #main table td {
             border: 0;
@@ -260,7 +260,7 @@ def memeValeurs(jeu, n, direction):
         else:
             same3 = False
         if i + s[2] < len(jeu):
-            same2= same2= jeu[i].card // 4 == jeu[i+s[2]].card // 4
+            same2= jeu[i].card // 4 == jeu[i+s[2]].card // 4
         else:
             same2= False
             
@@ -269,16 +269,51 @@ def memeValeurs(jeu, n, direction):
             
     return c
 
+def memeCouleur(jeu, n, direction):   
+    s = steps(n, direction)  
+    l= 0 
+    for i in range(s[0], s[1], s[2]):
+        empty = jeu[i].card == 52
+        
+        if i + 2 * s[2] < len(jeu):
+            same3= jeu[i+s[2]].card % 4 == jeu[i + 2 * s[2]].card %4
+        else:
+            same3 = False
+        if i + s[2] < len(jeu):
+            same2= jeu[i].card % 4 == jeu[i+s[2]].card % 4
+        else:
+            same2= False
+        
+        if not empty and same2:
+            l+= 1 if same3 else 2
+            
+    return l
+# meme algorithme que le calcul juste on a besoin quand c = 5 ( 5 couleurs )
+# quand c = 5 ca veux dire on a tout les couleurs dans une ligne ou colonne
+# pas besoin trier car c'est a propos des couleurs puis on s'en fou si c<5
+
+
+
+
+
 
 def points(game):
     jeu = game.copy()
     
     for i in range(5):
         # nb cartes meme valeurs
-        horizontal = memeValeurs(jeu, i, 0)
-        vertical = memeValeurs(jeu, i, 1)
         
-        print(horizontal, vertical)
+        horizontalc = memeCouleur(jeu, i, 0)
+        verticalc = memeCouleur(jeu, i, 1)
+      
+        horizontalv = memeValeurs(jeu, i, 0)
+        verticalv = memeValeurs(jeu, i, 1)
+        
+        
+        
+        print(horizontalc, verticalc)
+       
+        print(horizontalv, verticalv)
 
                 
 def mettrejeuAJour(game):
@@ -289,7 +324,7 @@ def mettrejeuAJour(game):
             c+=1
     if c == 25:
         alert( " vous avez fini ")
-    print(c)
+    
         init()
     
 def clic(id):
@@ -307,10 +342,16 @@ def clic(id):
     
     points(game)
     
+ 
+    
+    memeValeurs(game, 0 ,0)
+    memeValeurs(game, 1, 0)
     print('\n=======================')
     
-    memeValeurs(game, 0)
-    memeValeurs(game, 1)
+    memeCouleur(game, 0, 0)
+    memeCouleur(game, 1, 0)
+   
+   
     
     mettrejeuAJour(game)
 
