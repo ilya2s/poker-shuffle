@@ -271,7 +271,7 @@ def memeValeurs(jeu, n, direction):
 
 def memeCouleur(jeu, n, direction):   
     s = steps(n, direction)  
-    l= 0 
+    c= 0 
     for i in range(s[0], s[1], s[2]):
         empty = jeu[i].card == 52
         
@@ -279,22 +279,56 @@ def memeCouleur(jeu, n, direction):
             same3= jeu[i+s[2]].card % 4 == jeu[i + 2 * s[2]].card %4
         else:
             same3 = False
+            
         if i + s[2] < len(jeu):
             same2= jeu[i].card % 4 == jeu[i+s[2]].card % 4
         else:
             same2= False
+                 
+        if i + 4*s[2] < len(jeu):
+            same4= jeu[i+2*s[2]].card % 4 == jeu[i + 4 * s[2]].card %4
+        else:
+            same4= False
         
         if not empty and same2:
-            l+= 1 if same3 else 2
+            c+= 3 if (same3 and same4) else 2
             
-    return l
-# meme algorithme que le calcul juste on a besoin quand c = 5 ( 5 couleurs )
-# quand c = 5 ca veux dire on a tout les couleurs dans une ligne ou colonne
-# pas besoin trier car c'est a propos des couleurs puis on s'en fou si c<5
+    return c
 
+# meme algorithme que le calcul juste on a besoin quand c = 9 ( 5 couleurs )
+# quand c = 9 ca veux dire on a tout les couleurs dans une ligne ou colonne
+# pas besoin trier car c'est a propos des couleurs puis on s'en fou si c<9
 
+def memeserie(jeu, n, direction):
+    jeu = trier(jeu, direction)
+    
+    s = steps(n, direction)
+    
+    c= 0 
+    for i in range(s[0], s[1], s[2]):
+        empty = jeu[i].card == 52
+        
+        if i + 2 * s[2] < len(jeu):
+            same3= (jeu[i+s[2]].card // 4)+1 == (jeu[(i) + 2 * s[2]].card // 4)
+            
+       
+        else:
+            same3 = False
+        if i + s[2] < len(jeu):
+            same2= (jeu[i].card // 4)+1 == (jeu[i+s[2]].card // 4)
+            
+        else:
+            same2= False
+            
+        if not empty and same2:
+            c+= 1 if same3 else 2
+            if c==5:     
+                return c
 
-
+# 
+# quand c = 5 ca veux dire on a tout les sont sussective dans une ligne ou colonne
+# quand c = 4 ca veux dire 4 carte sont sussective dans une ligne ou colonne
+# on sont foue des autres
 
 
 def points(game):
@@ -309,11 +343,14 @@ def points(game):
         horizontalv = memeValeurs(jeu, i, 0)
         verticalv = memeValeurs(jeu, i, 1)
         
-        
+        horizontals = memeserie(jeu, i, 0)
+        verticals = memeserie(jeu, i, 1)
         
         print(horizontalc, verticalc)
        
-        print(horizontalv, verticalv)
+        #print(horizontalv, verticalv)
+
+        #print(horizontals, verticals)
 
                 
 def mettrejeuAJour(game):
@@ -344,13 +381,17 @@ def clic(id):
     
  
     
-    memeValeurs(game, 0 ,0)
-    memeValeurs(game, 1, 0)
+   # memeValeurs(game, 0 ,0)
+    #memeValeurs(game, 1, 0)
     print('\n=======================')
     
     memeCouleur(game, 0, 0)
     memeCouleur(game, 1, 0)
-   
+    
+    print('\n=======================')
+    
+    #memeserie(game, 0, 0)
+    #memeserie(game, 1, 0)
    
     
     mettrejeuAJour(game)
