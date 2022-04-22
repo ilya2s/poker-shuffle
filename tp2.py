@@ -34,9 +34,9 @@ html = """
 """
 
 cartes = [
-    "AC", "AD", "AH", "AS",             # 0, 1, 2, 3
-    "2C", "2D", "2H", "2S",             # 4, 5, 6, 7
-    "3C", "3D", "3H", "3S",             # 8, 9, 10, 11
+    "AC", "AD", "AH", "AS",             # 00, 01, 02, 03
+    "2C", "2D", "2H", "2S",             # 04, 05, 06, 07
+    "3C", "3D", "3H", "3S",             # 08, 09, 10, 11
     "4C", "4D", "4H", "4S",             # 12, 13, 14, 15
     "5C", "5D", "5H", "5S",             # 16, 17, 18, 19
     "6C", "6D", "6H", "6S",             # 20, 21, 22, 23
@@ -262,10 +262,10 @@ def memeValeur(hand):
         same3 = False
         same2 = False
         
-        if i + 2 < len(hand):
-            same3 = hand[i+1] // 4 == hand[i+2] // 4
         if i + 1 < len(hand):
             same2 = hand[i] // 4 == hand[i+1] // 4
+        if i + 2 < len(hand):
+            same3 = hand[i+1] // 4 == hand[i+2] // 4
         
         if not empty and same2:
             c+= 1 if same3 else 2
@@ -274,24 +274,25 @@ def memeValeur(hand):
 
 
 def memeCouleur(hand):
-    c= 0
-    
+    explored = []
     for i in range(len(hand)):
-        empty = hand[i] == 52
-        same3 = False
-        same2 = False
-        
-        if i + 1 < len(hand) and hand[i+1] != 52:
-            breakpoint()
-            same2 = hand[i] % 4 == hand[i+1] % 4
-        if i + 2 < len(hand) and hand[i+2] != 52:
-            breakpoint()
-            same3 = hand[i+1] % 4 == hand[i+2] % 4
-        
-        if not empty and same2:
-            c+= 1 if same3 else 2
+        for j in range(len(hand)):
+            same = i == j
+            empty = (hand[i] == 52 or hand[j] == 52)
+            same = not same and not empty and hand[i] % 4 == hand[j] % 4
+            
+            seenFirst = hand[i] in explored
+            seenSecond = hand[j] in explored
+            seen = seenFirst and seenSecond
+            
+            if same and not seen:
+                if not seenFirst: explored.append(hand[i])
+                if not seenSecond: explored.append(hand[j])
     
-    return c
+    nbSameColor = len(explored)
+            
+    return nbSameColor
+
 
 def points(hand):
     jeu = game.copy()
@@ -300,11 +301,16 @@ def points(hand):
         horizontalHand = sortHand(getHand(jeu, i, 0))
         verticalHand = sortHand(getHand(jeu, i, 1))
         
-        nbMemeValeur = memeValeur(horizontalHand)
-        nbMemeCouleur = memeCouleur(horizontalHand)
+        nbMemeValeurHorizontal = memeValeur(horizontalHand)
+        nbMemeValeurVertical = memeValeur(verticalHand)
         
-        #print(nbMemeValeur)
-
+        nbMemeCouleurHorizontal = memeCouleur(horizontalHand)
+        nbMemeCouleurVertical = memeCouleur(verticalHand)
+        
+        print(nbMemeCouleurHorizontal, nbMemeCouleurVertical)
+        
+    print('==========================')
+    
         
 def mettrejeuAJour(game):
     jeu = game.copy()
@@ -333,8 +339,6 @@ def clic(id):
     points(game)
     
     mettrejeuAJour(game)
-    
-    print('\n=======================')
     
 
     
