@@ -34,20 +34,20 @@ html = """
 """
 
 cartes = [
-    "AC", "AD", "AH", "AS",
-    "2C", "2D", "2H", "2S",
-    "3C", "3D", "3H", "3S",
-    "4C", "4D", "4H", "4S",
-    "5C", "5D", "5H", "5S",
-    "6C", "6D", "6H", "6S",
-    "7C", "7D", "7H", "7S",
-    "8C", "8D", "8H", "8S",
-    "9C", "9D", "9H", "9S",
-    "10C", "10D", "10H", "10S",
-    "JC", "JD", "JH", "JS",
-    "QC", "QD", "QH", "QS",
-    "KC", "KD", "KH", "KS",
-    "empty", "back"]                
+    "AC", "AD", "AH", "AS",             # 0, 1, 2, 3
+    "2C", "2D", "2H", "2S",             # 4, 5, 6, 7
+    "3C", "3D", "3H", "3S",             # 8, 9, 10, 11
+    "4C", "4D", "4H", "4S",             # 12, 13, 14, 15
+    "5C", "5D", "5H", "5S",             # 16, 17, 18, 19
+    "6C", "6D", "6H", "6S",             # 20, 21, 22, 23
+    "7C", "7D", "7H", "7S",             # 24, 25, 26, 27
+    "8C", "8D", "8H", "8S",             # 28, 29, 30, 31
+    "9C", "9D", "9H", "9S",             # 32, 33, 34, 35
+    "10C", "10D", "10H", "10S",         # 36, 37, 38, 39
+    "JC", "JD", "JH", "JS",             # 40, 41, 42, 43
+    "QC", "QD", "QH", "QS",             # 44, 45, 46, 47
+    "KC", "KD", "KH", "KS",             # 48, 49, 50, 51
+    "empty", "back"]                    # 52, 53      
 
 
 def makeGame():
@@ -213,74 +213,99 @@ def placeCard(clic, case):
 
 
 def steps(i, direction):
-    # 0 -> horizontal
-    # else -> vertical
     if direction == 0:
         start= i * 5
-        end= start + 4
+        end= start + 5
         step= 1
     else:
-        start= i
-        end= start + 21
-        step= 5
+        start = i
+        end = i + 21
+        step = 5
     
     return (start, end, step)
 
-                
-def trier(jeu, direction):
-    jeu = jeu.copy()
-    
-    # soit 5 lignes ou 5 colonnes
-    for i in range(5):
-        s = steps(i, direction)
-        
-        echange = True
-        while echange:
-            echange = False
-            for j in range(s[0], s[1], s[2]):
-                if j+s[2] < len(jeu) and jeu[j].card > jeu[j+s[2]].card:
-                    temp = jeu[j]
-                    jeu[j] = jeu[j+s[2]]
-                    jeu[j+s[2]] = temp
-                    echange = True
-    return jeu 
 
-
-def memeValeurs(jeu, n, direction):
-    jeu = trier(jeu, direction)
+def getHand(game, n, direction):
     
+    jeu = game.copy()
     s = steps(n, direction)
     
-    c= 0 
+    hand = []
     for i in range(s[0], s[1], s[2]):
-        empty = jeu[i].card == 52
+        hand.append(jeu[i].card)
+    
+    return hand
+
+
+def sortHand(hand):
+    sort = hand.copy()
+    
+    for i in range(1, len(sort)):
         
-        if i + 2 * s[2] < len(jeu):
-            same3= jeu[i+s[2]].card // 4 == jeu[i + 2 * s[2]].card // 4
-        else:
-            same3 = False
-        if i + s[2] < len(jeu):
-            same2= same2= jeu[i].card // 4 == jeu[i+s[2]].card // 4
-        else:
-            same2= False
-            
+        card = sort[i]
+        
+        j = i-1
+        
+        while j >= 0 and card < sort[j]:
+            sort[j + 1] = sort[j]
+            j -= 1
+        sort[j + 1] = card
+    
+    return sort
+
+
+def memeValeur(hand):
+    c= 0
+    
+    for i in range(len(hand)):
+        empty = hand[i] == 52
+        same3 = False
+        same2 = False
+        
+        if i + 2 < len(hand):
+            same3 = hand[i+1] // 4 == hand[i+2] // 4
+        if i + 1 < len(hand):
+            same2 = hand[i] // 4 == hand[i+1] // 4
+        
         if not empty and same2:
             c+= 1 if same3 else 2
-            
+    
     return c
 
 
-def points(game):
+def memeCouleur(hand):
+    c= 0
+    
+    for i in range(len(hand)):
+        empty = hand[i] == 52
+        same3 = False
+        same2 = False
+        
+        if i + 1 < len(hand) and hand[i+1] != 52:
+            breakpoint()
+            same2 = hand[i] % 4 == hand[i+1] % 4
+        if i + 2 < len(hand) and hand[i+2] != 52:
+            breakpoint()
+            same3 = hand[i+1] % 4 == hand[i+2] % 4
+        
+        if not empty and same2:
+            c+= 1 if same3 else 2
+    
+    return c
+
+def points(hand):
     jeu = game.copy()
     
     for i in range(5):
-        # nb cartes meme valeurs
-        horizontal = memeValeurs(jeu, i, 0)
-        vertical = memeValeurs(jeu, i, 1)
+        horizontalHand = sortHand(getHand(jeu, i, 0))
+        verticalHand = sortHand(getHand(jeu, i, 1))
         
-        print(horizontal, vertical)
+        nbMemeValeur = memeValeur(horizontalHand)
+        nbMemeCouleur = memeCouleur(horizontalHand)
+        
+        #print(nbMemeValeur)
 
-
+        
 def mettrejeuAJour(game):
     jeu = game.copy()
     c=0
@@ -290,7 +315,8 @@ def mettrejeuAJour(game):
     if c == 25:
         alert( " vous avez fini ")
         init()
-                
+
+
 def clic(id):
     
     clic = game[id]
