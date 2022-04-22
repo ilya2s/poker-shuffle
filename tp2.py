@@ -278,20 +278,43 @@ def memeCouleur(hand):
     for i in range(len(hand)):
         for j in range(len(hand)):
             same = i == j
-            empty = (hand[i] == 52 or hand[j] == 52)
-            same = not same and not empty and hand[i] % 4 == hand[j] % 4
+            empty = hand[i] == 52 or hand[j] == 52
+            sameColor = not same and not empty and hand[i] % 4 == hand[j] % 4
             
             seenFirst = hand[i] in explored
             seenSecond = hand[j] in explored
             seen = seenFirst and seenSecond
             
-            if same and not seen:
+            if sameColor and not seen:
                 if not seenFirst: explored.append(hand[i])
                 if not seenSecond: explored.append(hand[j])
     
     nbSameColor = len(explored)
             
     return nbSameColor
+
+
+def memeSerie(hand):
+    explored= []
+    for i in range(len(hand)):
+        for j in range(len(hand)):
+            same = i == j
+            empty = hand[i] == 52 or hand[j] == 52
+            #breakpoint()
+            suite = (hand[i] // 4) + 1 == hand[j] // 4
+            serie = not same and not empty and suite
+            
+            seenFirst = hand[i] in explored
+            seenSecond = hand[j] in explored
+            seen = seenFirst and seenSecond
+            
+            if serie and not seen:
+                if not seenFirst: explored.append(hand[i])
+                if not seenSecond: explored.append(hand[j])
+            
+    nbSerie = len(explored)
+    
+    return nbSerie
 
 
 def points(hand):
@@ -307,7 +330,9 @@ def points(hand):
         nbMemeCouleurHorizontal = memeCouleur(horizontalHand)
         nbMemeCouleurVertical = memeCouleur(verticalHand)
         
-        print(nbMemeCouleurHorizontal, nbMemeCouleurVertical)
+        nbMemeSerieHorizontal = memeSerie(horizontalHand)
+        
+        print(nbMemeSerieHorizontal)
         
     print('==========================')
     
