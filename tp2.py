@@ -1,8 +1,5 @@
 html = """
 <style>
-        #main {
-            padding: 1%;
-        }
         #main table td {
             border: 0;
             padding: 1px 2px;
@@ -13,8 +10,7 @@ html = """
         #main table td {
             width: 70px;
             height: 98px;
-            text-align:
-            center;
+            text-align: center;
             font-size: 24px;
         }
         #main table td button {
@@ -72,17 +68,17 @@ def emptyCase(num):
 def pointsCol(dimension):
     balise = ''
     for i in range(dimension):
-        balise += '<td id="C' + str(i) + '">20</td>'
+        balise += '<td id="C' + str(i) + '"></td>'
     
     return balise
 
 
 def pointsRang(index):
-    return '<td id="R' + str(index) + '">20</td></tr>'
+    return '<td id="R' + str(index) + '"></td></tr>'
 
 
 def pointsTot():
-    return '<td id="T">999</td>'
+    return '<td id="T"></td>'
 
 
 def tableauPoints(dimension):
@@ -120,14 +116,23 @@ def randomCard():
     return math.floor(random() * 52)
 
 
+def randomCardDEBUG():
+    cards = [7, 9, 13, 17, 12]
+    
+    i= math.floor(random() * 5)
+    return cards[i]
+
+
 def drawCard(clic, case):
     if clic.id == 25 and clic.card == 53:
         card = randomCard()
+        #card = randomCardDEBUG()
         c = 0
         
         while c < 25:
             if card == game[c].card:
                 card = randomCard()
+                #card = randomCardDEBUG()
                 c = 0
             else:
                 c +=1
@@ -255,86 +260,182 @@ def sortHand(hand):
 
 
 def memeValeur(hand):
-    c= 0
-    
+    memeVal = []
     for i in range(len(hand)):
-        empty = hand[i] == 52
-        same3 = False
-        same2 = False
+        for j in range(len(hand)):
+            same = i == j
+            empty = hand[i] == 52 or hand[j] == 52
+            sameValue = not same and not empty and hand[i] // 4 == hand[j] // 4
+            
+            seenFirst = hand[i] in memeVal
+            seenSecond = hand[j] in memeVal
+            
+            if sameValue:
+                if not seenFirst: memeVal.append(hand[i])
+                if not seenSecond: memeVal.append(hand[j])
+                
+    return memeVal
         
-        if i + 1 < len(hand):
-            same2 = hand[i] // 4 == hand[i+1] // 4
-        if i + 2 < len(hand):
-            same3 = hand[i+1] // 4 == hand[i+2] // 4
-        
-        if not empty and same2:
-            c+= 1 if same3 else 2
-    
-    return c
 
 
 def memeCouleur(hand):
-    explored = []
+    memeCoul = []
     for i in range(len(hand)):
         for j in range(len(hand)):
             same = i == j
             empty = hand[i] == 52 or hand[j] == 52
             sameColor = not same and not empty and hand[i] % 4 == hand[j] % 4
+                      
+            seenFirst = hand[i] in memeCoul
+            seenSecond = hand[j] in memeCoul
             
-            seenFirst = hand[i] in explored
-            seenSecond = hand[j] in explored
-            seen = seenFirst and seenSecond
-            
-            if sameColor and not seen:
-                if not seenFirst: explored.append(hand[i])
-                if not seenSecond: explored.append(hand[j])
+            if sameColor:
+                if not seenFirst: memeCoul.append(hand[i])
+                if not seenSecond: memeCoul.append(hand[j])
     
-    nbSameColor = len(explored)
-            
-    return nbSameColor
+    return memeCoul
 
 
 def memeSerie(hand):
-    explored= []
+    memeSer= []
     for i in range(len(hand)):
         for j in range(len(hand)):
+            if j-1 >= 0 and hand[j] // 4 ==  hand[j-1] // 4: continue
             same = i == j
             empty = hand[i] == 52 or hand[j] == 52
-            #breakpoint()
+            
             suite = (hand[i] // 4) + 1 == hand[j] // 4
             serie = not same and not empty and suite
             
-            seenFirst = hand[i] in explored
-            seenSecond = hand[j] in explored
-            seen = seenFirst and seenSecond
+            # Cas As à la fin
+            if hand[0] in range(4):
+                r = 1 < len(hand)
+                ten = hand[1] if r and hand[1] in range(36, 40) else 0
+                r = 2 < len(hand)
+                valet = hand[2] if r and hand[2] in range(40, 44) else 0
+                r = 3 < len(hand)
+                queen = hand[3] if r and hand[3] in range(44, 48) else 0
+                r = 4 < len(hand)
+                king =  hand[4] if r and hand[4] in range(48, 52) else 0
+                
+                if ten and valet and queen and king:
+                    royal = True
+                    return [hand[0], ten, valet, queen, king], royal
             
-            if serie and not seen:
-                if not seenFirst: explored.append(hand[i])
-                if not seenSecond: explored.append(hand[j])
+            seenFirst = hand[i] in memeSer
+            seenSecond = hand[j] in memeSer
             
-    nbSerie = len(explored)
+            if serie:
+                if not seenFirst: memeSer.append(hand[i])
+                if not seenSecond: memeSer.append(hand[j])
     
-    return nbSerie
+    royal = False
+    return memeSer, royal
+
+
+def getMemeValPoints(hand):
+    memeVal = memeValeur(hand)
+    nMemeVal = len(memeVal)
+        
+    if nMemeVal == 2:
+        return 2               # Paire
+    elif nMemeVal == 3:
+        return 10              # Brelan
+    elif nMemeVal == 4:
+        memeVal.pop()
+        memeVal = memeValeur(memeVal)
+        
+        if len(memeVal) != 2:
+            return 50          # Carré
+        else:
+            return 5           # Double Paire
+            
+    elif nMemeVal == 5:
+        return 25              # Full House
+    else:
+        return 0
+
+
+def getMemeCoulPoints(hand):
+    memeCoul = memeCouleur(hand)
+    nMemeCoul = len(memeCoul)
+    couleur = False
+    
+    if nMemeCoul == 5:        
+        memeCoul.pop()
+        memeCoul = memeCouleur(memeCoul)
+        
+        if len(memeCoul) == 4:
+            memeCoul.pop()
+            memeCoul = memeCouleur(memeCoul)
+            
+            if len(memeCoul) == 3:
+                couleur = True
+              
+    points = 20 if couleur else 0
+    
+    return points
+        
+
+def getMemeSerPoints(hand, pointsMemeCoul):
+    serie = memeSerie(hand)
+    memeSer = serie[0]
+    royal = serie[1]
+    nMemeSer = len(memeSer)
+    points = 0
+    serie = False
+    
+    if royal:
+        points = 100 if pointsMemeCoul == 20 else 0
+    
+    if nMemeSer == 5:
+        memeSer.pop()
+        memeSer = memeSerie(memeSer)[0]
+
+        if len(memeSer) == 4:
+            memeSer.pop()
+            memeSer = memeSerie(memeSer)[0]
+            if len(memeSer) == 3:
+                serie = True
+        
+    if serie:
+        points = 75 if pointsMemeCoul == 20 else 15
+
+    return points
+
+
+def updatePoints(position, direction, points, total):
+    if not direction: pointsHTML = document.querySelector('#R' + str(position))
+    else: pointsHTML = document.querySelector('#C' + str(position))
+    totalHTML = document.querySelector('#T')
+    
+    pointsHTML.innerHTML = str(points) if points else ''
+    totalHTML.innerHTML = str(total) if total else ''
+
 
 
 def points(hand):
     jeu = game.copy()
     
+    total = 0
     for i in range(5):
-        horizontalHand = sortHand(getHand(jeu, i, 0))
-        verticalHand = sortHand(getHand(jeu, i, 1))
-        
-        nbMemeValeurHorizontal = memeValeur(horizontalHand)
-        nbMemeValeurVertical = memeValeur(verticalHand)
-        
-        nbMemeCouleurHorizontal = memeCouleur(horizontalHand)
-        nbMemeCouleurVertical = memeCouleur(verticalHand)
-        
-        nbMemeSerieHorizontal = memeSerie(horizontalHand)
-        
-        print(nbMemeSerieHorizontal)
-        
-    print('==========================')
+        for j in range(2):
+            hand = sortHand(getHand(jeu, i, j))
+            
+            pValeur = getMemeValPoints(hand)
+            pCouleur = getMemeCoulPoints(hand)
+            pSerie = getMemeSerPoints(hand, pCouleur)
+            
+            pCouleur = 0 if pSerie == 100 else pCouleur
+            pCouleur = 0 if pSerie == 75 else pCouleur
+            pSerie = 0 if pValeur == 50 else pSerie
+            pSerie = 0 if pValeur == 25 else pSerie
+            
+            points = pValeur + pCouleur + pSerie
+            
+            total += points
+            
+            updatePoints(i, j, points, total)    
     
         
 def mettrejeuAJour(game):
