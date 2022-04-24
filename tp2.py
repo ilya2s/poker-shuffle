@@ -67,7 +67,7 @@ cartes = [
 
 #___________________________________________________________________________# 
 # La fonction makeGame ne prend pas de paramettre
-# et retourne une structure qui contien l'id, si elle est selectionne 
+# et retourne un tableau de structure qui contien l'id, si elle est selectionne 
 # et le nombre de carte
 
 def makeGame():
@@ -78,14 +78,15 @@ def makeGame():
     return game
 #___________________________________________________________________________# 
 # La fonction img prend un entier comme paramettre (num)
-# et retourne limage des carte 
+# et retourne un texte du lien des images des carte 
 
-def img(num):#lien de la photo de la carte
+def img(num):
     return '<img src="http://codeboot.org/cards/' + cartes[num] + '.svg">'
 
 #___________________________________________________________________________# 
 # La fonction emptyCase prend un entier comme paramettre (num)
-# et retourne le tableau qui contien des cartes vide
+# et retourne un texte qui contien les id des cases avec 
+# des cartes vides
 
 def emptyCase(num):
     case = '<td id="case' + str(num) + '" onclick="clic('
@@ -94,7 +95,7 @@ def emptyCase(num):
     return case
 #___________________________________________________________________________# 
 # La fonction pointsCol prend un entier comme paramettre (dimension)
-# et retourne les points des images de la colonne
+# et retourne  un texte des points des images de la colonne
 
 def pointsCol(dimension):
     balise = ''
@@ -104,25 +105,25 @@ def pointsCol(dimension):
     return balise
 #___________________________________________________________________________# 
 # La fonction pointsRang prend un entier comme paramettre (index)
-# et retourne les points des images de la range
+# et retourne  un texte des points des images de la range
 
 def pointsRang(index):
     return '<td id="R' + str(index) + '"></td></tr>'
 #___________________________________________________________________________# 
-# La fonction pointsTot ne prend pas de paramettre et retourne le nombre totale
-# de points a cumuler des ligne et colonne du tableau
+# La fonction pointsTot ne prend pas de paramettre et retourne un texte
+# du nombre totale de points cumuler des ligne et colonne du tableau
 
 def pointsTot():
     return '<td id="T"></td>'
 #___________________________________________________________________________# 
 # La fonction tableauPoints prend un entier comme paramettre (dimension)
-# et retourne ne nombre de points dans une colone
+# et retourne un texte du nombre de points dans une colone
 
 def tableauPoints(dimension):
     return '<tr>' + pointsCol(dimension) + pointsTot() + '</tr>'
 #___________________________________________________________________________# 
 # La fonction rangees prend un entier comme paramettre (dimension)
-# et retourne ne nombre de points dans la range
+# et retourne un texte du nombre de points dans une range !!!
 
 def rangees(dimension):
     balise = ''
@@ -137,7 +138,7 @@ def rangees(dimension):
     return balise
 #___________________________________________________________________________# 
 # La fonction tableauCartes prend un entier comme paramettre (dimension)
-# et retourne les points de la rangees plus du tableau de points
+# et retourne un texte des points de la rangees plus du tableau de points !!!
 
 def tableauCartes(dimesion):
     balise = rangees(dimesion) + tableauPoints(dimesion)
@@ -145,13 +146,13 @@ def tableauCartes(dimesion):
     return balise
 #___________________________________________________________________________# 
 # La fonction creerTable prend un entier comme paramettre (dimension)
-# et retourne un tableau de carte
+# et retourne un texte de tableau de carte
 
 def creerTable(dimension):
     return '<table>' + tableauCartes(dimension) + '</table>'
 #___________________________________________________________________________# 
 # La fonction getCase prend un entier comme paramettre (id)
-# et retourne ca casse avec son id
+# et retourne ca case avec son id
 
 def getCase(id):
     return document.querySelector('#case' + str(id))
@@ -174,7 +175,7 @@ def randomCardDEBUG(): # pour tester les fonctions
     return cards[i]
 #___________________________________________________________________________# 
 # La fonction drawCard prend deux paramettre (clic) qui est la carte 
-# puis (case) qui est l'id et sont tout les deux des entier
+# puis (case) qui est l'id et sont tout les deux des entier !!!
 
 def drawCard(clic, case):
     if clic.id == 25 and clic.card == 53:
@@ -194,7 +195,7 @@ def drawCard(clic, case):
         case.innerHTML = img(card)
 #___________________________________________________________________________# 
 # La fonction selection prend un entier comme paramettre (clic)
-# qui montre si la carte est selectionne ou pas
+# qui montre si la carte est selectionne ou pas !!!
 
 def selection(clic):
     if clic.card != 52:
@@ -262,7 +263,7 @@ def placeCard(clic, case):
                 elemCase.innerHTML = img(52)
        
       
-     # si une carte des selectionne avec une autre carte on switch leurs!!!!
+     # si une carte des selectionne avec une autre carte on switch leurs
      # position mais pas dans le deck
     if not deck.selected and clic.card != 52:
         for element in game:
@@ -284,8 +285,8 @@ def placeCard(clic, case):
                 selection(clic)
                 highlight(clic, case)
 #___________________________________________________________________________# 
-# La fonction steps prend deux paramettre (i) et (direction) et qui returne
-# le debut, la fin et les pas des lignes et colones du tableau
+# La fonction steps prend deux paramettre (i) et (direction) des entiers
+# et qui returne le debut, la fin et les pas des lignes et colones du tableau
  
 def steps(i, direction):
     if direction == 0:# on est dans les ligne
@@ -300,8 +301,8 @@ def steps(i, direction):
     return (start, end, step)
 #___________________________________________________________________________# 
 # La fonction getHand prend trois paramettre (game), (n) et (direction) 
-# et qui retourne un tableau qui contien une ligne ou une colonne de carte 
-# qui est hand
+# des entiers et qui retourne un tableau qui contien une ligne ou une colonne
+# de carte qui est hand
 
 
 def getHand(game, n, direction):
@@ -336,8 +337,8 @@ def sortHand(hand):
     return sort
 
 #___________________________________________________________________________# 
-# La fonction memeValeur prend un paramettre (hand) et qui retourne
-# un entier si deux carte ou plus on la meme valeurs
+# La fonction memeValeur prend un paramettre (hand) un tableau et qui retourne
+# un tableau d'entier si deux carte ou plus on la meme valeurs
 
 def memeValeur(hand):
     memeVal = []
@@ -361,8 +362,8 @@ def memeValeur(hand):
         
 
 #___________________________________________________________________________# 
-# La fonction memeCouleur prend un paramettre (hand) et qui retourne
-# un entier si les 5 cartes sont de la meme couleurs
+# La fonction memeCouleur prend un paramettre (hand) un tableau et qui retourne
+# un tableau d'entier si les 5 cartes sont de la meme couleurs
 
 def memeCouleur(hand):
     memeCoul = []
@@ -384,8 +385,8 @@ def memeCouleur(hand):
     return memeCoul
 
 #___________________________________________________________________________# 
-# La fonction memeSerie prend un paramettre (hand) et qui retourne
-# un entier si on a une suite de carte
+# La fonction memeSerie prend un paramettre (hand) un tableau et qui retourne
+# un tableau d'entier si on a une suite de carte
 
 def memeSerie(hand):
     memeSer= []
@@ -402,7 +403,9 @@ def memeSerie(hand):
             
 
             # si dans notre main on a un as, un dix, un valet,une reine,un rois
-            # alors c'est une flush
+            
+            # alors c'est une flush les range c'est leurs index dans notres 
+            # tableau de carte
             if hand[0] in range(4):
                 r = 1 < len(hand)
                 ten = hand[1] if r and hand[1] in range(36, 40) else 0
@@ -429,8 +432,8 @@ def memeSerie(hand):
     return memeSer, royal
 
 #___________________________________________________________________________# 
-# La fonction getMemeValPoints prend un paramettre (hand) et qui retourne
-# le calcule des points des cartes de la meme valeurs
+# La fonction getMemeValPoints prend un paramettre (hand) un tableau
+# et qui retourne un entier, des points des cartes de la meme valeur
 
 def getMemeValPoints(hand):
     memeVal = memeValeur(hand)
@@ -458,8 +461,8 @@ def getMemeValPoints(hand):
         return 0       # 0 points
 
 #___________________________________________________________________________# 
-# La fonction getMemeCoulPoints prend un paramettre (hand) et qui retourne
-# le calcule des points des cartes de la couleurs
+# La fonction getMemeCoulPoints prend un paramettre (hand) un tableau
+# et qui retourne un entier, des points des cartes de la couleurs
 
 def getMemeCoulPoints(hand):
     memeCoul = memeCouleur(hand)
@@ -484,9 +487,9 @@ def getMemeCoulPoints(hand):
         
 
 #___________________________________________________________________________# 
-# La fonction getMemeSerPoints prend deux paramettre (hand) et (pointsMemeCoul) 
-# et qui retourne le calcule des points des cartes si il y'a une suite
-# et si ils sont tous de la meme couleurs 
+# La fonction getMemeSerPoints prend deux paramettre (hand)  un tableau
+# et(pointsMemeCoul) un entier qui retourne le calcule des points des cartes 
+# si il y'a une suite et si ils sont tous de la meme couleurs 
 
 def getMemeSerPoints(hand, pointsMemeCoul):
     serie = memeSerie(hand)
@@ -500,14 +503,14 @@ def getMemeSerPoints(hand, pointsMemeCoul):
         
         points = 100 if pointsMemeCoul == 20 else 0
     
-    if nMemeSer == 5:
+    if nMemeSer == 5: # on a 5 carte qui se suive
         memeSer.pop()
         memeSer = memeSerie(memeSer)[0]
 
-        if len(memeSer) == 4:
+        if len(memeSer) == 4: # on a 4 carte qui se suive
             memeSer.pop()
             memeSer = memeSerie(memeSer)[0]
-            if len(memeSer) == 3:
+            if len(memeSer) == 3: # on a 3 carte qui se suive
                 serie = True
         
     if serie: # si on a une serie avec de carte avec les couleurs +75 points
@@ -518,19 +521,24 @@ def getMemeSerPoints(hand, pointsMemeCoul):
 
 #___________________________________________________________________________# 
 # La fonction updatePoints prend quatre paramettre position, direction, points
-# et total et qui mettre la valeurs des points dans le tableau de jeux 
+# et total des entier et qui met la valeurs des points dans le tableau de jeux 
 
 def updatePoints(position, direction, points, total):
+    # on affiche les points pour chaque range
     if not direction: pointsHTML = document.querySelector('#R' + str(position))
+        
+    # on affiche les points pour chaque ligne
     else: pointsHTML = document.querySelector('#C' + str(position))
+        
+    # on affiche les points du total
     totalHTML = document.querySelector('#T')
     
-    pointsHTML.innerHTML = str(points) if points else ''
+    pointsHTML.innerHTML = str(points) if points else '' 
     totalHTML.innerHTML = str(total) if total else ''
 
 
 #___________________________________________________________________________# 
-# La fonction points prend un paramettre (hand) 
+# La fonction points prend un paramettre (hand) un tableau
 # et qui fait le calcul des points une fois qu'on a une serie, meme couleurs 
 # et meme valeurs puis fait le calcule totale
 
@@ -542,21 +550,26 @@ def points(hand):
         for j in range(2):
             hand = sortHand(getHand(jeu, i, j))
             
-            pValeur = getMemeValPoints(hand)
-            pCouleur = getMemeCoulPoints(hand)
-            pSerie = getMemeSerPoints(hand, pCouleur)
+            pValeur = getMemeValPoints(hand) # les points des cartes qui on 
+                                             # la meme valeurs
+            pCouleur = getMemeCoulPoints(hand)# les points des cartes qui on 
+                                             # la meme couleurs
             
-            pCouleur = 0 if pSerie == 100 else pCouleur
-            pCouleur = 0 if pSerie == 75 else pCouleur
-            pSerie = 0 if pValeur == 50 else pSerie
-            pSerie = 0 if pValeur == 25 else pSerie
+            pSerie = getMemeSerPoints(hand, pCouleur)# les points des cartes 
+                                                    # on suite et si ils ont
+                                                   # la meme couleurs
+                    
+            pCouleur = 0 if pSerie == 100 else pCouleur # flush royal
+            pCouleur = 0 if pSerie == 75 else pCouleur # flush 
+            pSerie = 0 if pValeur == 50 else pSerie # Carré
+            pSerie = 0 if pValeur == 25 else pSerie #Full House
             
             # on calcule le totale des points dans le jeux 
             # quand on a une serie, meme couleurs ou meme valeurs
             
             points = pValeur + pCouleur + pSerie
             
-            total += points
+            total += points # le total de nos points du jeu
             
             updatePoints(i, j, points, total)    
     
@@ -566,18 +579,19 @@ def points(hand):
 # une fois la partie termine quand le tableau est rempli
 
 def mettrejeuAJour(game):
+    
     jeu = game.copy()
     c=0
     for i in range(25): # on regarde si le tableau est remplis
         if jeu[i].card != 52:
             c+=1
     if c == 25:# impime vous avez fini quand on fini le jeu
-        alert( " vous avez fini avec")#ici on mets le nombre totale de points!!!!!!
+        alert( " vous avez fini avec "+ str(points(game)) +"points")#ici on mets le nombre totale de points!!!!!!
         init()
 
 #___________________________________________________________________________#         
-# La fonction clic un paramettre (id) et qui enrengiste les donnes lors
-# d'un clic               
+# La fonction clic un paramettre (id) et qui execute et enrengiste les donnes
+# lors d'un clic               
 def clic(id):
 
     
@@ -603,9 +617,9 @@ def init():
     
     global game
     
-    main = document.querySelector('#main')
+    main = document.querySelector('#main') # notre style de tableau
     
-    main.innerHTML = html + creerTable(5)
+    main.innerHTML = html + creerTable(5) # on cree notrs tableau
     
     game = makeGame()
 
