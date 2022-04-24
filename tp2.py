@@ -10,11 +10,12 @@
                          ### JEU DE POKER SHUFFLE ###
 
 
+ # on cree un tableau cinq par cinq pour mettre nos carte avec le style donne
 
 html = """
 <style>
         #main {
-            padding: 1%;
+            padding: 0,5%;
         }
         #main table td {
             border: 0;
@@ -35,12 +36,12 @@ html = """
             padding: 8%;
         }
     </style>
-                                            # on cree un tableau cinq par cinq pour mettre nos carte 
     <table>
         <tr>
             <td><button onclick="init();">Nouvelle partie</button></td>
             <td></td>
-            <td id="case25" onclick="clic(25);"><img src="http://codeboot.org/cards/back.svg"></td>
+            <td id="case25" onclick="clic(25);">
+            <img src="http://codeboot.org/cards/back.svg"></td>
             <td></td>
         </tr>
     </table>
@@ -68,6 +69,7 @@ cartes = [
 # La fonction makeGame ne prend pas de paramettre
 # et retourne une structure qui contien l'id, si elle est selectionne 
 # et le nombre de carte
+
 def makeGame():
     game = []
     for i in range(26):
@@ -78,7 +80,7 @@ def makeGame():
 # La fonction img prend un entier comme paramettre (num)
 # et retourne limage des carte 
 
-def img(num):
+def img(num):#lien de la photo de la carte
     return '<img src="http://codeboot.org/cards/' + cartes[num] + '.svg">'
 
 #___________________________________________________________________________# 
@@ -125,9 +127,9 @@ def tableauPoints(dimension):
 def rangees(dimension):
     balise = ''
     c = 0
-    for i in range(dimension):
+    for i in range(dimension): # ligne vide
         balise += '<tr>'
-        for j in range(dimension):
+        for j in range(dimension): # colonne vide
             balise += emptyCase(c)
             c += 1
         balise += pointsRang(i)
@@ -153,6 +155,8 @@ def creerTable(dimension):
 
 def getCase(id):
     return document.querySelector('#case' + str(id))
+
+
 #___________________________________________________________________________# 
 # La fonction randomCard ne prend pas de paramettre et retourne un chiffre
 # entre 1 et 51 pour melege le deck
@@ -195,6 +199,7 @@ def drawCard(clic, case):
 def selection(clic):
     if clic.card != 52:
         clic.selected = False if clic.selected else True
+    
 #___________________________________________________________________________# 
 # La fonction bgLime prend un paramettre (case) et qui change de couleurs
 # si on selectionne la carte en vert
@@ -215,7 +220,7 @@ def bgTransparent(case):
 
 def highlight(clic, case):
     if clic.selected:
-        # if there is a selected card that is not the clicked card : deselect
+        # si la carte est deja selectionne et on reclick ca la deselectionne
         for element in game:
             if element.selected and element != clic:
                 selection(element)
@@ -232,9 +237,9 @@ def placeCard(clic, case):
     deck = game[25]
     deckCase = getCase(deck.id)
     
-    if deck.selected and clic.card == 52:        
-        selection(deck)
-        highlight(deck, deckCase)
+    if deck.selected and clic.card == 52: # le deck dois etre selectionne     
+        selection(deck)                   # et une fois click dans la carte      
+        highlight(deck, deckCase)         # on peu la mettre dans le jeux
         
         clic.card = deck.card
         deck.card = 53
@@ -242,8 +247,8 @@ def placeCard(clic, case):
         case.innerHTML = deckCase.innerHTML
         deckCase.innerHTML = img(53)
     
-    elif not deck.selected and clic.card == 52:
-        for element in game:
+    elif not deck.selected and clic.card == 52:# si le jeux est vide on peu 
+        for element in game:                  # le mettre une carte ou on veux
             if element.selected:
                 elemCase = getCase(element.id)
                 
@@ -257,7 +262,8 @@ def placeCard(clic, case):
                 elemCase.innerHTML = img(52)
        
       
-      
+     # si une carte des selectionne avec une autre carte on switch leurs!!!!
+     # position mais pas dans le deck
     if not deck.selected and clic.card != 52:
         for element in game:
             if element.selected and element.id != clic.id:
@@ -282,11 +288,11 @@ def placeCard(clic, case):
 # le debut, la fin et les pas des lignes et colones du tableau
  
 def steps(i, direction):
-    if direction == 0:
+    if direction == 0:# on est dans les ligne
         start= i * 5
         end= start + 5
         step= 1
-    else:
+    else:# on est dans les colonne
         start = i
         end = i + 21
         step = 5
@@ -304,8 +310,8 @@ def getHand(game, n, direction):
     s = steps(n, direction)
     
     hand = []
-    for i in range(s[0], s[1], s[2]):
-        hand.append(jeu[i].card)
+    for i in range(s[0], s[1], s[2]):# on prends un tableau 
+        hand.append(jeu[i].card) 
     
     return hand
 
@@ -316,13 +322,13 @@ def getHand(game, n, direction):
 def sortHand(hand):
     sort = hand.copy()
     
-    for i in range(1, len(sort)):
+    for i in range(1, len(sort)):#on trie le tableau par leurs index 
         
         card = sort[i]
         
         j = i-1
         
-        while j >= 0 and card < sort[j]:
+        while j >= 0 and card < sort[j]: 
             sort[j + 1] = sort[j]
             j -= 1
         sort[j + 1] = card
@@ -337,6 +343,9 @@ def memeValeur(hand):
     memeVal = []
     for i in range(len(hand)):
         for j in range(len(hand)):
+            
+            # si dans notre main on a que les deux element ou plus sont //4
+            # alors ils sont de la meme valeurs
             same = i == j
             empty = hand[i] == 52 or hand[j] == 52
             sameValue = not same and not empty and hand[i] // 4 == hand[j] // 4
@@ -359,6 +368,8 @@ def memeCouleur(hand):
     memeCoul = []
     for i in range(len(hand)):
         for j in range(len(hand)):
+            # si dans notre main on a que les deux element ou plus sont %4
+            # alors ils sont de la meme couleurs
             same = i == j
             empty = hand[i] == 52 or hand[j] == 52
             sameColor = not same and not empty and hand[i] % 4 == hand[j] % 4
@@ -380,6 +391,8 @@ def memeSerie(hand):
     memeSer= []
     for i in range(len(hand)):
         for j in range(len(hand)):
+            # si dans notre main on a que la difference entre nos carte sont
+            # de 1 alors on a une serie
             if j-1 >= 0 and hand[j] // 4 ==  hand[j-1] // 4: continue
             same = i == j
             empty = hand[i] == 52 or hand[j] == 52
@@ -387,7 +400,9 @@ def memeSerie(hand):
             suite = (hand[i] // 4) + 1 == hand[j] // 4
             serie = not same and not empty and suite
             
-            # Cas As à la fin
+
+            # si dans notre main on a un as, un dix, un valet,une reine,un rois
+            # alors c'est une flush
             if hand[0] in range(4):
                 r = 1 < len(hand)
                 ten = hand[1] if r and hand[1] in range(36, 40) else 0
@@ -422,23 +437,25 @@ def getMemeValPoints(hand):
     nMemeVal = len(memeVal)
         
 
-    if nMemeVal == 2:
-        return 2               # Paire
-    elif nMemeVal == 3:
-        return 10              # Brelan
+    if nMemeVal == 2: #si deux carte de la meme valeurs(une Paire)
+        return 2      # 2 points          
+    elif nMemeVal == 3:#si deux carte de la meme valeurs(un Brelan)
+        return 10     # 10 points
     elif nMemeVal == 4:
         memeVal.pop()
         memeVal = memeValeur(memeVal)
         
-        if len(memeVal) != 2:
-            return 50          # Carré
-        else:
-            return 5           # Double Paire
+        if len(memeVal) != 2: #si quatre carte de la meme valeurs (un Carré)         
+            return 50   # 50 points
+    
+        else:              #si on a deux paire (une Double Paire)
+            return 5    # 5 points
             
-    elif nMemeVal == 5:
-        return 25              # Full House
-    else:
-        return 0
+    elif nMemeVal == 5: # si on a une paire et un Berlan (une Full House)
+        return 25       # 25 points
+    
+    else:              # sinon on a rien
+        return 0       # 0 points
 
 #___________________________________________________________________________# 
 # La fonction getMemeCoulPoints prend un paramettre (hand) et qui retourne
@@ -449,25 +466,27 @@ def getMemeCoulPoints(hand):
     nMemeCoul = len(memeCoul)
     couleur = False
     
-    if nMemeCoul == 5:        
+    if nMemeCoul == 5: # on a 5 carte de la meme couleurs       
         memeCoul.pop()
         memeCoul = memeCouleur(memeCoul)
         
-        if len(memeCoul) == 4:
+        if len(memeCoul) == 4:# on a 4 carte de la meme couleurs
             memeCoul.pop()
             memeCoul = memeCouleur(memeCoul)
             
-            if len(memeCoul) == 3:
+            if len(memeCoul) == 3: # on a 3 carte de la meme couleurs
                 couleur = True
-              
-    points = 20 if couleur else 0
+                
+    #si on a 5 carte de la meme couleurs alors +20 points            
+    points = 20 if couleur else 0 
     
     return points
         
 
 #___________________________________________________________________________# 
-# La fonction getMemeSerPoints prend deux paramettre (hand) et (pointsMemeCoul) et qui retourne
-# le calcule des points des cartes si il y'a une suite et si ils sont tous de la meme couleurs 
+# La fonction getMemeSerPoints prend deux paramettre (hand) et (pointsMemeCoul) 
+# et qui retourne le calcule des points des cartes si il y'a une suite
+# et si ils sont tous de la meme couleurs 
 
 def getMemeSerPoints(hand, pointsMemeCoul):
     serie = memeSerie(hand)
@@ -477,7 +496,8 @@ def getMemeSerPoints(hand, pointsMemeCoul):
     points = 0
     serie = False
     
-    if royal:
+    if royal:# si on a une flush royal avec les meme couleurs alors +100 points
+        
         points = 100 if pointsMemeCoul == 20 else 0
     
     if nMemeSer == 5:
@@ -490,14 +510,15 @@ def getMemeSerPoints(hand, pointsMemeCoul):
             if len(memeSer) == 3:
                 serie = True
         
-    if serie:
+    if serie: # si on a une serie avec de carte avec les couleurs +75 points
+        # si ils sont pas de la meme couleurs +15 points
         points = 75 if pointsMemeCoul == 20 else 15
 
     return points
 
 #___________________________________________________________________________# 
-# La fonction updatePoints prend quatre paramettre position, direction, points et total
-# et qui mettre la valeurs des points dans le tableau de jeux 
+# La fonction updatePoints prend quatre paramettre position, direction, points
+# et total et qui mettre la valeurs des points dans le tableau de jeux 
 
 def updatePoints(position, direction, points, total):
     if not direction: pointsHTML = document.querySelector('#R' + str(position))
@@ -510,8 +531,8 @@ def updatePoints(position, direction, points, total):
 
 #___________________________________________________________________________# 
 # La fonction points prend un paramettre (hand) 
-# et qui fait le calcul des points une fois qu'on a une serie, meme couleurs et meme valeurs 
-# puis fait le calcule totale
+# et qui fait le calcul des points une fois qu'on a une serie, meme couleurs 
+# et meme valeurs puis fait le calcule totale
 
 def points(hand):
     jeu = game.copy()
@@ -530,6 +551,9 @@ def points(hand):
             pSerie = 0 if pValeur == 50 else pSerie
             pSerie = 0 if pValeur == 25 else pSerie
             
+            # on calcule le totale des points dans le jeux 
+            # quand on a une serie, meme couleurs ou meme valeurs
+            
             points = pValeur + pCouleur + pSerie
             
             total += points
@@ -544,11 +568,11 @@ def points(hand):
 def mettrejeuAJour(game):
     jeu = game.copy()
     c=0
-    for i in range(25):
+    for i in range(25): # on regarde si le tableau est remplis
         if jeu[i].card != 52:
             c+=1
-    if c == 25:
-        alert( " vous avez fini ")
+    if c == 25:# impime vous avez fini quand on fini le jeu
+        alert( " vous avez fini avec")#ici on mets le nombre totale de points!!!!!!
         init()
 
 #___________________________________________________________________________#         
@@ -587,39 +611,76 @@ def init():
 
 
 init()
-#___________________________________________________________________________#
-#___________________________________________________________________________#
-"""
-def test ():#test unitaires
-    assert makeGame()
-    assert img(num)
-    assert emptyCase(num)
-    assert pointsCol(dimension)
-    assert pointsRang(index)
-    assert pointsTot()
-    assert tableauPoints(dimension)
-    assert rangees(dimension)
-    assert tableauCartes(dimesion)
-    assert creerTable(dimension)
-    assert getCase(id)
-    assert randomCard()
-    assert drawCard(clic, case)
-    assert selection(clic)
-    assert bgLime(case)
-    assert bgTransparent(case)
-    assert highlight(clic, case)
-    assert placeCard(clic, case)
-    assert steps(i, direction)
-    assert getHand(game, n, direction)
-    assert sortHand(hand)
-    assert memeValeur(hand)
-    assert memeCouleur(hand)
-    assert memeSerie(hand)
-    assert flushRoyal(hand)
-    assert points(hand)
-    assert mettrejeuAJour(game)
-    assert clic(id)
-    assert init()
 
-#test()
-"""
+#___________________________________________________________________________#
+#___________________________________________________________________________#
+
+def test ():#test unitaires
+    game = makeGame()
+    assert game[0]== struct(id=0, selected=False, card=52)
+    assert game[-1]!= struct(id=0, selected=False, card=52)
+    #assert game[1]== struct(id=0, selected=False, card=52)
+    #assert game[25]== struct(id=0, selected=False, card=52)
+    #assert game[10] != struct(id=0, selected=False, card=52)
+    
+    assert img(53) == '<img src="http://codeboot.org/cards/back.svg">'
+    assert img(52) == '<img src="http://codeboot.org/cards/empty.svg">'
+    assert img(0) == '<img src="http://codeboot.org/cards/AC.svg">'
+    assert img(26) == '<img src="http://codeboot.org/cards/7H.svg">'
+    assert img(39) == '<img src="http://codeboot.org/cards/10S.svg">'
+    
+    assert pointsCol(0) == ""
+    assert pointsCol(1) =='<td id="C0"></td>'
+    assert pointsCol(3)== '<td id="C0"></td><td id="C1"></td><td id="C2"></td>'
+    assert pointsCol(-1)== ""
+    assert pointsCol(-30)==""
+    
+    assert pointsRang(1)=='<td id="R1"></td></tr>'
+    assert pointsRang(0)=='<td id="R0"></td></tr>'
+    assert pointsRang(10)=='<td id="R10"></td></tr>'
+    assert pointsRang(-1)=='<td id="R-1"></td></tr>'
+    assert pointsRang(59)=='<td id="R59"></td></tr>'
+    
+    assert steps(0, 0)==(0, 5, 1)
+    assert steps(1, 0)==(5, 10, 1)
+    assert steps(0, 1)==(0, 21, 5)
+    assert steps(-1, -1)==(-1, 20, 5)
+    assert steps(5, 2)==(5, 26, 5)
+    
+    assert sortHand([0, 0, 0])==[0, 0, 0]
+    assert sortHand([1, 2, 3])==[1, 2, 3]
+    assert sortHand([5, 4, 3, 2, 1])==[1,2,3,4,5]
+    assert sortHand([2, 4, -1])==[-1,2,4]
+    assert sortHand([])==[]
+    
+    assert memeValeur([0])==[]
+    assert memeValeur([1,5,9,14,19])==[]
+    assert memeValeur([1,1,-1,-1])==[1, 1, -1, -1]
+    assert memeValeur([])==[]
+    assert memeValeur([1,2,3,4,5])==[1, 2, 3, 4, 5]
+    
+    assert memeCouleur([1, 2, 3, 4, 5])==[1, 5]
+    assert memeCouleur([])==[]
+    assert memeCouleur([0,1,2,3])==[]
+    assert memeCouleur([4,5,6,7])==[]
+    assert memeCouleur([0,0,0,0])==[0,0]
+    
+    assert memeSerie([0,0,0,0])==([], False)
+    assert memeSerie([0,4,8,12])==([0, 4, 8, 12], False)
+    assert memeSerie([])==([], False)
+    assert memeSerie([1,2,3,4,5])==([1, 4, 2, 3], False) #je sais pas prk
+    assert memeSerie([0,36,40,44,48])==([0, 36, 40, 44, 48], True)
+    
+    assert getMemeValPoints([1,2,3,4,5])==25
+    assert getMemeValPoints([])==0
+    assert getMemeValPoints([-1])==0
+    assert getMemeValPoints([1,1,1,1,1])==2
+    assert getMemeValPoints([1,1,2,2,3])==50
+    
+    assert getMemeCoulPoints([])==0
+    assert getMemeCoulPoints([1, 2, 3, 4, 5])==0
+    assert getMemeCoulPoints([1,1,1,1,1])==0
+    assert getMemeCoulPoints([1,5,9,13,17])==20
+    assert getMemeCoulPoints([2,18,46,42,26])==20
+
+test()
