@@ -12,7 +12,7 @@
 
 
 html = """
-<style>                                       # le style du tableau
+<style>
         #main {
             padding: 1%;
         }
@@ -26,8 +26,7 @@ html = """
         #main table td {
             width: 70px;
             height: 98px;
-            text-align:
-            center;
+            text-align: center;
             font-size: 24px;
         }
         #main table td button {
@@ -49,24 +48,20 @@ html = """
 #___________________________________________________________________________# 
                     # tous les cartes du jeu
 cartes = [
-    "AC", "AD", "AH", "AS",             # 00, 01, 02, 03
-    "2C", "2D", "2H", "2S",             # 04, 05, 06, 07
-    "3C", "3D", "3H", "3S",             # 08, 09, 10, 11
-    "4C", "4D", "4H", "4S",             # 12, 13, 14, 15
-    "5C", "5D", "5H", "5S",             # 16, 17, 18, 19
-    "6C", "6D", "6H", "6S",             # 20, 21, 22, 23
-    "7C", "7D", "7H", "7S",             # 24, 25, 26, 27
-    "8C", "8D", "8H", "8S",             # 28, 29, 30, 31
-    "9C", "9D", "9H", "9S",             # 32, 33, 34, 35
-    "10C", "10D", "10H", "10S",         # 36, 37, 38, 39
-    "JC", "JD", "JH", "JS",             # 40, 41, 42, 43
-    "QC", "QD", "QH", "QS",             # 44, 45, 46, 47
-    "KC", "KD", "KH", "KS",             # 48, 49, 50, 51
-    "empty", "back"]                    # 52, 53      
-#___________________________________________________________________________# 
-# La fonction makeGame ne prend pas de paramettre
-# et retourne une structure qui contien l'id, si elle est selectionne 
-# et le nombre de carte
+    "AC", "AD", "AH", "AS",
+    "2C", "2D", "2H", "2S",
+    "3C", "3D", "3H", "3S",
+    "4C", "4D", "4H", "4S",
+    "5C", "5D", "5H", "5S",
+    "6C", "6D", "6H", "6S",
+    "7C", "7D", "7H", "7S",
+    "8C", "8D", "8H", "8S",
+    "9C", "9D", "9H", "9S",
+    "10C", "10D", "10H", "10S",
+    "JC", "JD", "JH", "JS",
+    "QC", "QD", "QH", "QS",
+    "KC", "KD", "KH", "KS",
+    "empty", "back"]                
 
 def makeGame():
     game = []
@@ -97,7 +92,7 @@ def emptyCase(num):
 def pointsCol(dimension):
     balise = ''
     for i in range(dimension):
-        balise += '<td id="C' + str(i) + '">20</td>'
+        balise += '<td id="C' + str(i) + '"></td>'
     
     return balise
 #___________________________________________________________________________# 
@@ -105,14 +100,10 @@ def pointsCol(dimension):
 # et retourne les points des images de la range
 
 def pointsRang(index):
-    return '<td id="R' + str(index) + '">20</td></tr>'
-#___________________________________________________________________________# 
-# La fonction pointsTot ne prend pas de paramettre et retourne le nombre totale
-# de points a cumuler des ligne et colonne du tableau
+    return '<td id="R' + str(index) + '"></td></tr>'
 
 def pointsTot():
-    return '<td id="T">999</td>'
-#___________________________________________________________________________# 
+    return '<td id="T"></td>'
 
 # La fonction tableauPoints prend un entier comme paramettre (dimension)
 # et retourne ne nombre de points dans une colone
@@ -164,14 +155,24 @@ def randomCard():
 # La fonction drawCard prend deux paramettre (clic) qui est la carte 
 # puis (case) qui est l'id et sont tout les deux des entier
 
+
+def randomCardDEBUG():
+    cards = [7, 9, 13, 17, 12]
+    
+    i= math.floor(random() * 5)
+    return cards[i]
+
+
 def drawCard(clic, case):
     if clic.id == 25 and clic.card == 53:
         card = randomCard()
+        #card = randomCardDEBUG()
         c = 0
         
         while c < 25:
             if card == game[c].card:
                 card = randomCard()
+                #card = randomCardDEBUG()
                 c = 0
             else:
                 c +=1
@@ -287,6 +288,7 @@ def steps(i, direction):
 # et qui retourne un tableau qui contien une ligne ou une colonne de carte 
 # qui est hand
 
+
 def getHand(game, n, direction):
     
     jeu = game.copy()
@@ -297,9 +299,7 @@ def getHand(game, n, direction):
         hand.append(jeu[i].card)
     
     return hand
-#___________________________________________________________________________# 
-# La fonction sortHand prend un paramettre (hand) et qui retourne
-# le tableau(hand) trier en ordre
+
 
 def sortHand(hand):
     sort = hand.copy()
@@ -316,142 +316,211 @@ def sortHand(hand):
         sort[j + 1] = card
     
     return sort
-#___________________________________________________________________________# 
-# La fonction memeValeur prend un paramettre (hand) et qui retourne
-# un entier si deux carte ou plus on la meme valeurs
+
 
 def memeValeur(hand):
-    c= 0
-    
+    memeVal = []
     for i in range(len(hand)):
-        empty = hand[i] == 52
-        same3 = False
-        same2 = False
+        for j in range(len(hand)):
+            same = i == j
+            empty = hand[i] == 52 or hand[j] == 52
+            sameValue = not same and not empty and hand[i] // 4 == hand[j] // 4
+            
+            seenFirst = hand[i] in memeVal
+            seenSecond = hand[j] in memeVal
+            
+            if sameValue:
+                if not seenFirst: memeVal.append(hand[i])
+                if not seenSecond: memeVal.append(hand[j])
+                
+    return memeVal
         
-        if i + 1 < len(hand):
-            same2 = hand[i] // 4 == hand[i+1] // 4
-        if i + 2 < len(hand):
-            same3 = hand[i+1] // 4 == hand[i+2] // 4
-        
-        if not empty and same2:
-            c+= 1 if same3 else 2
-    
-    return c
-#___________________________________________________________________________# 
-# La fonction memeCouleur prend un paramettre (hand) et qui retourne
-# un entier si les 5 cartes sont de la meme couleurs
+
 
 def memeCouleur(hand):
-    explored = []
+    memeCoul = []
     for i in range(len(hand)):
         for j in range(len(hand)):
             same = i == j
             empty = hand[i] == 52 or hand[j] == 52
             sameColor = not same and not empty and hand[i] % 4 == hand[j] % 4
+                      
+            seenFirst = hand[i] in memeCoul
+            seenSecond = hand[j] in memeCoul
             
-            seenFirst = hand[i] in explored
-            seenSecond = hand[j] in explored
-            seen = seenFirst and seenSecond
-            
-            if sameColor and not seen:
-                if not seenFirst: explored.append(hand[i])
-                if not seenSecond: explored.append(hand[j])
+            if sameColor:
+                if not seenFirst: memeCoul.append(hand[i])
+                if not seenSecond: memeCoul.append(hand[j])
     
-    nbSameColor = len(explored)
-            
-    return nbSameColor
-#___________________________________________________________________________# 
-# La fonction memeSerie prend un paramettre (hand) et qui retourne
-# un entier si on a une suite de carte
+    return memeCoul
+
 
 def memeSerie(hand):
-    explored= []
+    memeSer= []
     for i in range(len(hand)):
         for j in range(len(hand)):
+            if j-1 >= 0 and hand[j] // 4 ==  hand[j-1] // 4: continue
             same = i == j
             empty = hand[i] == 52 or hand[j] == 52
-            #breakpoint()
+            
             suite = (hand[i] // 4) + 1 == hand[j] // 4
             serie = not same and not empty and suite
             
-            seenFirst = hand[i] in explored
-            seenSecond = hand[j] in explored
-            seen = seenFirst and seenSecond
+            # Cas As à la fin
+            if hand[0] in range(4):
+                r = 1 < len(hand)
+                ten = hand[1] if r and hand[1] in range(36, 40) else 0
+                r = 2 < len(hand)
+                valet = hand[2] if r and hand[2] in range(40, 44) else 0
+                r = 3 < len(hand)
+                queen = hand[3] if r and hand[3] in range(44, 48) else 0
+                r = 4 < len(hand)
+                king =  hand[4] if r and hand[4] in range(48, 52) else 0
+                
+                if ten and valet and queen and king:
+                    royal = True
+                    return [hand[0], ten, valet, queen, king], royal
             
-            if serie and not seen:
-                if not seenFirst: explored.append(hand[i])
-                if not seenSecond: explored.append(hand[j])
+            seenFirst = hand[i] in memeSer
+            seenSecond = hand[j] in memeSer
             
-    nbSerie = len(explored)
+            if serie:
+                if not seenFirst: memeSer.append(hand[i])
+                if not seenSecond: memeSer.append(hand[j])
     
-    return nbSerie
+# le tableau(hand) trier en ordre
+# La fonction sortHand prend un paramettre (hand) et qui retourne
 #___________________________________________________________________________# 
-# La fonction flushRoyal prend un paramettre (hand) et qui retourne
-# un entier si on a un as, 10 , J, Q ,K dans la main avec 5 meme couleurs
+    royal = False
+    return memeSer, royal
 
-def flushRoyal(hand):
-    explored= []
-    for i in range(len(hand)):
-        for j in range(len(hand)):
-            same = i == j
-            empty = hand[i] == 52 or hand[j] == 52
+
+def getMemeValPoints(hand):
+    memeVal = memeValeur(hand)
+    nMemeVal = len(memeVal)
+        
+# un entier si les 5 cartes sont de la meme couleurs
+# La fonction memeCouleur prend un paramettre (hand) et qui retourne
+#___________________________________________________________________________# 
+# un entier si deux carte ou plus on la meme valeurs
+# La fonction memeValeur prend un paramettre (hand) et qui retourne
+#___________________________________________________________________________# 
+    if nMemeVal == 2:
+        return 2               # Paire
+    elif nMemeVal == 3:
+        return 10              # Brelan
+    elif nMemeVal == 4:
+        memeVal.pop()
+        memeVal = memeValeur(memeVal)
+        
+        if len(memeVal) != 2:
+            return 50          # Carré
+        else:
+            return 5           # Double Paire
             
-            suite =  hand[i] + 1 == hand[j]== (0 or 1 or 2 or 3) and  (36 or 37 or 38 or 39) and (40 or 41 or 42 or 43) and (44 or 45 or 46 or 47) and (48 or 49 or 50 or 51)
-            # ca marche pas ici je voulais faire que la carte 1 c'est l'as, 2 c'est le 10, 3 c'est le J, 4 c'est la queen puis la 5 le king 
-            # puis on dois aussi mettre la meme couleurs 
-            
-            """
-            (hand[1] == 0 or 1 or 2 or 3) and
-            (hand[2] == 36 or 37 or 38 or 39) and
-            (hand[3] == 40 or 41 or 42 or 43) and 
-            (hand[4] == 44 or 45 or 46 or 47)and 
-            (hand[5] == 48 or 49 or 50 or 51)
-            """
-            serie = not same and not empty and suite
-            
-            seenFirst = hand[i] in explored
-            seenSecond = hand[j] in explored
-            seen = seenFirst and seenSecond
-            
-            if serie and not seen:
-                if not seenFirst: explored.append(hand[i])
-                if not seenSecond: explored.append(hand[j])
-            
-    flush = len(explored)
+    elif nMemeVal == 5:
+        return 25              # Full House
+    else:
+        return 0
+
+
+def getMemeCoulPoints(hand):
+    memeCoul = memeCouleur(hand)
+    nMemeCoul = len(memeCoul)
+    couleur = False
     
-    return flush
+    if nMemeCoul == 5:        
+        memeCoul.pop()
+        memeCoul = memeCouleur(memeCoul)
+        
+        if len(memeCoul) == 4:
+            memeCoul.pop()
+            memeCoul = memeCouleur(memeCoul)
+            
+            if len(memeCoul) == 3:
+                couleur = True
+              
+    points = 20 if couleur else 0
+    
+    return points
+        
 
+# un entier si on a une suite de carte
+# La fonction memeSerie prend un paramettre (hand) et qui retourne
 #___________________________________________________________________________# 
-# La fonction points prend un paramettre (hand) et qui calcule une colonne
+def getMemeSerPoints(hand, pointsMemeCoul):
+    serie = memeSerie(hand)
+    memeSer = serie[0]
+    royal = serie[1]
+    nMemeSer = len(memeSer)
+    points = 0
+    serie = False
+    
+    if royal:
+        points = 100 if pointsMemeCoul == 20 else 0
+    
+    if nMemeSer == 5:
+        memeSer.pop()
+        memeSer = memeSerie(memeSer)[0]
+
 # et une ligne du jeu
+# La fonction points prend un paramettre (hand) et qui calcule une colonne
+#___________________________________________________________________________# 
+# un entier si on a un as, 10 , J, Q ,K dans la main avec 5 meme couleurs
+# La fonction flushRoyal prend un paramettre (hand) et qui retourne
+#___________________________________________________________________________# 
+        if len(memeSer) == 4:
+            memeSer.pop()
+            memeSer = memeSerie(memeSer)[0]
+            if len(memeSer) == 3:
+                serie = True
+        
+    if serie:
+        points = 75 if pointsMemeCoul == 20 else 15
+
+    return points
+
+
+def updatePoints(position, direction, points, total):
+    if not direction: pointsHTML = document.querySelector('#R' + str(position))
+    else: pointsHTML = document.querySelector('#C' + str(position))
+    totalHTML = document.querySelector('#T')
+    
+    pointsHTML.innerHTML = str(points) if points else ''
+    totalHTML.innerHTML = str(total) if total else ''
+
+
 
 def points(hand):
     jeu = game.copy()
     
+    total = 0
     for i in range(5):
-        horizontalHand = sortHand(getHand(jeu, i, 0))
-        verticalHand = sortHand(getHand(jeu, i, 1))
+        for j in range(2):
+            hand = sortHand(getHand(jeu, i, j))
+            
+            pValeur = getMemeValPoints(hand)
+            pCouleur = getMemeCoulPoints(hand)
+            pSerie = getMemeSerPoints(hand, pCouleur)
+            
+            pCouleur = 0 if pSerie == 100 else pCouleur
+            pCouleur = 0 if pSerie == 75 else pCouleur
+            pSerie = 0 if pValeur == 50 else pSerie
+            pSerie = 0 if pValeur == 25 else pSerie
+            
+            points = pValeur + pCouleur + pSerie
+            
+            total += points
+            
+            updatePoints(i, j, points, total)    
+    
         
-        nbMemeValeurHorizontal = memeValeur(horizontalHand)
-        nbMemeValeurVertical = memeValeur(verticalHand)
-        
-        nbMemeCouleurHorizontal = memeCouleur(horizontalHand)
-        nbMemeCouleurVertical = memeCouleur(verticalHand)
-        
-        nbMemeSerieHorizontal = memeSerie(horizontalHand)
-        nbMemeSerieVertical = memeSerie(verticalHand)
-        
-        flushRoyalHorizontal = flushRoyal(horizontalHand)
-        flushRoyalVertical = flushRoyal(verticalHand)
-        
-        
-        print(flushRoyalHorizontal)
-        
-    print('==========================')
+# d'un clic
+# La fonction clic un paramettre (id) et qui enrengiste les donnes lors
+#___________________________________________________________________________#         
+# une fois la partie termine quand le tableau est rempli
 #___________________________________________________________________________#     
 # La fonction mettrejeuAJour un paramettre (game) et qui relance le jeu 
-# une fois la partie termine quand le tableau est rempli
-       
 def mettrejeuAJour(game):
     jeu = game.copy()
     c=0
@@ -461,12 +530,8 @@ def mettrejeuAJour(game):
     if c == 25:
         alert( " vous avez fini ")
         init()
-        
-#___________________________________________________________________________#         
-# La fonction clic un paramettre (id) et qui enrengiste les donnes lors
-# d'un clic
-  
 
+                
 def clic(id):
     
     clic = game[id]
