@@ -7,6 +7,8 @@ Poker Shuffle is a solitaire poker game where the player draws 25 cards one at a
 - Move cards around the grid by selecting a card and clicking on a different blank square.
 - The game ends when the 25th card is placed and the final score is displayed.
 
+![image](https://user-images.githubusercontent.com/42526358/213894182-1e127670-9807-4057-8ba3-ed04e881eddf.png)
+
 ## Scoring
 - Different poker hands, such as flush, full house, and straight flush, have point values assigned to them.
 - Hands are scored for each row and column, and the total score is displayed at the bottom right of the grid.
